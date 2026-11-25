@@ -55,3 +55,29 @@ test('beta distribution', () => {
   assert.ok(post.ci[0] < post.mean && post.mean < post.ci[1]);
   close(S.betaInv(S.betaCdf(0.42, 3, 5), 3, 5), 0.42, 1e-6);
 });
+
+test('dealing is unbiased: chi-square p-values over many seeds look uniform', async () => {
+  const { RNG } = await import('../src/core/rng.js');
+  const { evaluate } = await import('../src/core/evaluator.js');
+  const SEVEN = [23294460, 58627800, 31433400, 6461620, 6180020, 4047644, 3473184, 224848, 41584].map((c) => c / 133784560);
+  const ps = [];
+  for (let s = 1; s <= 30; s++) {
+    const rng = new RNG(s * 7919);
+    const counts = new Array(9).fill(0);
+    const deck = Array.from({ length: 52 }, (_, i) => i);
+    const hand = new Array(7);
+    for (let t = 0; t < 20000; t++) {
+      for (let i = 0; i < 7; i++) {
+        const j = i + rng.int(52 - i);
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+        hand[i] = deck[i];
+      }
+      counts[evaluate(hand) >> 20]++;
+    }
+    ps.push(S.chiSquareTest(counts, SEVEN).pValue);
+  }
+  const meanP = S.mean(ps);
+  const small = ps.filter((p) => p < 0.05).length;
+  assert.ok(meanP > 0.3 && meanP < 0.7, `mean p ${meanP}`);
+  assert.ok(small <= 6, `${small} of 30 tests rejected at 5%`);
+});

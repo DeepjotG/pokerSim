@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PokerSim — learn statistics through poker</title>
+    <meta name="description" content="A Texas Hold'em simulator that shows the statistics behind every decision: equity, EV, pot odds, variance, confidence intervals and Bayes." />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♠</text></svg>" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand"><span class="logo">♠</span> PokerSim <span class="tagline">statistics you can play</span></div>
+      <nav class="tabs" role="tablist">
+        <button class="tab" data-tab="play">Play</button>
+        <button class="tab" data-tab="equity">Equity Lab</button>
+        <button class="tab" data-tab="odds">Odds &amp; EV</button>
+        <button class="tab" data-tab="probability">Probability</button>
+        <button class="tab" data-tab="ranges">Ranges &amp; Bayes</button>
+        <button class="tab" data-tab="variance">Variance</button>
+        <button class="tab" data-tab="learn">Learn</button>
+      </nav>
+      <div class="top-tools">
+        <label class="check small" title="Clubs green, diamonds blue: easier to read suits"><input type="checkbox" id="four-color" /> 4-color deck</label>
+        <button class="btn small ghost" id="theme-toggle" title="Toggle light/dark">◐</button>
+      </div>
+    </header>
+    <main>
+      <section class="tab-panel" id="tab-play" hidden></section>
+      <section class="tab-panel" id="tab-equity" hidden></section>
+      <section class="tab-panel" id="tab-odds" hidden></section>
+      <section class="tab-panel" id="tab-probability" hidden></section>
+      <section class="tab-panel" id="tab-ranges" hidden></section>
+      <section class="tab-panel" id="tab-variance" hidden></section>
+      <section class="tab-panel" id="tab-learn" hidden></section>
+    </main>
+    <noscript>PokerSim needs JavaScript.</noscript>
+    <script type="module" src="src/ui/app.js"></script>
+  </body>
+</html>

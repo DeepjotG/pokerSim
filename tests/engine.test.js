@@ -142,3 +142,30 @@ test('5000 bot hands: chips are conserved and no stack goes negative', () => {
   assert.equal(wr.hands, 5000);
   assert.ok(Number.isFinite(wr.sd100));
 });
+
+test('HUD analysis: pot odds, EV and raise EV follow their formulas', async () => {
+  const { analyzeDecision, evRaise, estimateRange } = await import('../src/game/analysis.js');
+  const g = new Game({ seats: [{ name: 'You', isHuman: true }, { name: 'B', profile: 'tag' }], seed: 11 });
+  const tr = new Tracker(g.players, g.bb);
+  g.startHand();
+  // make sure it's the hero's turn facing a raise
+  if (g.current.id !== 0) g.act({ type: 'raise', amount: 6 });
+  else {
+    g.act({ type: 'raise', amount: 6 });
+    g.act({ type: 'raise', amount: 18 });
+  }
+  const a = analyzeDecision(g, tr, 0, new RNG(1), { sims: 3000 });
+  assert.equal(a.toCall, g.legalActions().toCall);
+  assert.ok(Math.abs(a.potOdds.requiredEquity - a.toCall / (a.pot + a.toCall)) < 1e-12);
+  const eq = a.eqRange.equity;
+  assert.ok(Math.abs(a.evCallRange - (eq * a.pot - (1 - eq) * a.toCall)) < 1e-9);
+  assert.ok(a.eqRandom.equity > 0 && a.eqRandom.equity < 1 && a.eqRandom.se > 0);
+  // a raiser's range is narrowed with a Bayesian PFR estimate (prior mean 20%)
+  const r = estimateRange(g, tr, 1);
+  assert.equal(r.kind, 'range');
+  assert.ok(Math.abs(r.pct - 0.2) < 0.01);
+  // raise EV: pure bluff break-even fold frequency = B / (P + B)
+  const re = evRaise(a, g.legalActions().minRaiseTo, 0.5, 0);
+  assert.ok(Math.abs(re.breakEvenFE - re.B / (re.P + re.B)) < 1e-12);
+  assert.ok(Math.abs(re.ev - (0.5 * re.P + 0.5 * -re.B)) < 1e-9);
+});
