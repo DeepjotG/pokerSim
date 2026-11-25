@@ -1,0 +1,15 @@
+{
+  "name": "pokersim",
+  "version": "1.0.0",
+  "description": "A Texas Hold'em simulator for learning statistics: equity, EV, variance, confidence intervals, Bayes and more.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node scripts/serve.js",
+    "test": "node --test tests/*.test.js",
+    "verify": "node scripts/verify-evaluator.js",
+    "gen:preflop": "node scripts/gen-preflop.js",
+    "test:ui": "node scripts/ui-smoke.js"
+  },
+  "license": "MIT"
+}
